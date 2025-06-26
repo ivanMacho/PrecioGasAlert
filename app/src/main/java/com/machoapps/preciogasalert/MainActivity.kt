@@ -72,6 +72,14 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Llamando a checkLocationPermissionAndLoad()", Toast.LENGTH_SHORT).show()
         // Pedir permisos de localización y mostrar datos
         checkLocationPermissionAndLoad()
+
+        // Iniciar servicio de monitorización en segundo plano
+        val serviceIntent = Intent(this, LocationMonitorService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
     }
 
     private fun checkLocationPermissionAndLoad() {
