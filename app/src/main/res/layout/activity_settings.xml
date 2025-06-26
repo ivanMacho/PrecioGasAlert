@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/retro_black">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tipo de combustible"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/retro_black"
+        app:hintTextColor="@color/retro_green">
+
+        <AutoCompleteTextView
+            android:id="@+id/input_tipo_combustible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/retro_green"
+            android:background="@android:color/transparent"
+            android:inputType="none"
+            android:dropDownHeight="300dp"
+            android:fontFamily="monospace"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Precio máximo (€)"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/retro_black"
+        app:hintTextColor="@color/retro_green"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_precio_maximo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:textColor="@color/retro_green"
+            android:fontFamily="monospace"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Distancia máxima (km)"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/retro_black"
+        app:hintTextColor="@color/retro_green"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_distancia_maxima"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:textColor="@color/retro_green"
+            android:fontFamily="monospace"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_aplicar_filtros"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aplicar filtros"
+        android:textColor="@color/retro_black"
+        android:backgroundTint="@color/retro_green"
+        android:fontFamily="monospace"
+        android:layout_marginTop="32dp"
+        style="@style/Widget.Material3.Button"/>
+
+</LinearLayout> 

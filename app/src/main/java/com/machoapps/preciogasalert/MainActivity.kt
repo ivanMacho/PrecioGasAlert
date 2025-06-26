@@ -1,126 +1,175 @@
 package com.machoapps.preciogasalert
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import android.annotation.SuppressLint
+import android.util.Log
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var textViewWelcome: TextView
-    
+    private lateinit var textViewFiltros: TextView
+    private lateinit var textViewFecha: TextView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: EstacionAdapter
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private val REQUEST_CONFIG = 1001
+    private val REQUEST_LOCATION = 2001
+    private var userLat: Double? = null
+    private var userLon: Double? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
-        textViewWelcome = findViewById(R.id.textViewWelcome)
-        
-        // Configurar interfaz principal
-        configurarInterfaz()
-        
-        // Configurar click listener para cargar datos
-        textViewWelcome.setOnClickListener {
-            cargarDatosReales()
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        toolbar.title = getString(R.string.app_name)
+
+        textViewFiltros = findViewById(R.id.textViewFiltros)
+        textViewFecha = findViewById(R.id.textViewFecha)
+        recyclerView = findViewById(R.id.recyclerViewEstaciones)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = EstacionAdapter(emptyList(), "")
+        recyclerView.adapter = adapter
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        val fabSettings = findViewById<FloatingActionButton>(R.id.fabSettings)
+        fabSettings.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivityForResult(intent, REQUEST_CONFIG)
+        }
+
+        Log.d("PERMISOS", "Llamando a checkLocationPermissionAndLoad() desde onCreate")
+        Toast.makeText(this, "Llamando a checkLocationPermissionAndLoad()", Toast.LENGTH_SHORT).show()
+        // Pedir permisos de localización y mostrar datos
+        checkLocationPermissionAndLoad()
+    }
+
+    private fun checkLocationPermissionAndLoad() {
+        val tienePermiso = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        Log.d("PERMISOS", "¿Tiene permiso de localización? $tienePermiso")
+        Toast.makeText(this, "¿Permiso localización? $tienePermiso", Toast.LENGTH_SHORT).show()
+        if (!tienePermiso) {
+            Log.d("PERMISOS", "Solicitando permiso de localización...")
+            Toast.makeText(this, "Solicitando permiso de localización...", Toast.LENGTH_SHORT).show()
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION)
+        } else {
+            Log.d("PERMISOS", "Permiso ya concedido, obteniendo ubicación...")
+            Toast.makeText(this, "Permiso ya concedido, obteniendo ubicación...", Toast.LENGTH_SHORT).show()
+            obtenerUbicacionYMostrar()
         }
     }
-    
-    private fun configurarInterfaz() {
-        val infoText = """
-            PRECIO GAS ALERT
-            =================
-            
-            SISTEMA DE MONITOREO DE PRECIOS
-            ESTACIONES TERRESTRES
-            
-            MODELO DE DATOS CREADO:
-            ✓ Estaciones de servicio
-            ✓ Precios de combustibles
-            ✓ Información geográfica
-            ✓ Metadatos de consulta
-            
-            LISTO PARA CONECTAR CON API
-            ===========================
-            
-            TOCA PARA CARGAR DATOS REALES
-        """.trimIndent()
-        
-        textViewWelcome.text = infoText
-    }
-    
-    private fun cargarDatosReales() {
-        // Mostrar mensaje de carga
-        textViewWelcome.text = """
-            PRECIO GAS ALERT
-            =================
-            
-            CARGANDO DATOS DEL API...
-            =========================
-            
-            Conectando con Ministerio de Industria...
-            Obteniendo precios actualizados...
-            
-            Por favor espera...
-        """.trimIndent()
-        
-        // Cargar datos reales
-        EstacionManager.cargarDatosReales(
-            onSuccess = { apiResponse ->
-                mostrarDatosCargados(apiResponse)
-            },
-            onError = { error ->
-                mostrarError(error)
+
+    @SuppressLint("MissingPermission")
+    private fun obtenerUbicacionYMostrar() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("PERMISOS", "No hay permiso en obtenerUbicacionYMostrar")
+            Toast.makeText(this, "No hay permiso en obtenerUbicacionYMostrar", Toast.LENGTH_SHORT).show()
+            userLat = null
+            userLon = null
+            mostrarDatosGuardadosYRefrescar()
+            return
+        }
+        try {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                userLat = location?.latitude
+                userLon = location?.longitude
+                Log.d("PERMISOS", "Ubicación obtenida: lat=$userLat lon=$userLon")
+                Toast.makeText(this, "Ubicación: $userLat, $userLon", Toast.LENGTH_SHORT).show()
+                mostrarDatosGuardadosYRefrescar()
+            }.addOnFailureListener {
+                Log.d("PERMISOS", "Error al obtener ubicación")
+                Toast.makeText(this, "Error al obtener ubicación", Toast.LENGTH_SHORT).show()
+                userLat = null
+                userLon = null
+                mostrarDatosGuardadosYRefrescar()
             }
-        )
+        } catch (e: SecurityException) {
+            Log.d("PERMISOS", "SecurityException al obtener ubicación")
+            Toast.makeText(this, "SecurityException ubicación", Toast.LENGTH_SHORT).show()
+            userLat = null
+            userLon = null
+            mostrarDatosGuardadosYRefrescar()
+        }
     }
-    
-    private fun mostrarDatosCargados(apiResponse: ApiResponse) {
-        val estadisticas = EstacionManager.obtenerEstadisticas()
-        
-        val infoText = """
-            PRECIO GAS ALERT
-            =================
-            
-            DATOS CARGADOS EXITOSAMENTE
-            ===========================
-            
-            $estadisticas
-            
-            FUNCIONES DISPONIBLES:
-            ✓ Buscar por provincia
-            ✓ Buscar por municipio
-            ✓ Buscar por marca
-            ✓ Encontrar más baratas
-            
-            TOCA PARA VER ESTADÍSTICAS
-        """.trimIndent()
-        
-        textViewWelcome.text = infoText
-        
-        // Mostrar toast de confirmación
-        Toast.makeText(this, "Datos cargados: ${apiResponse.listaEESSPrecio.size} estaciones", Toast.LENGTH_SHORT).show()
+
+    private fun mostrarDatosGuardadosYRefrescar() {
+        // Mostrar datos guardados
+        actualizarUI()
+        // Refrescar en segundo plano
+        coroutineScope.launch {
+            EstacionManager.cargarDatosReales(
+                context = this@MainActivity,
+                onSuccess = {
+                    actualizarUI()
+                    Toast.makeText(this@MainActivity, "Datos actualizados", Toast.LENGTH_SHORT).show()
+                },
+                onError = {
+                    Toast.makeText(this@MainActivity, "No se pudo actualizar: $it", Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
     }
-    
-    private fun mostrarError(error: String) {
-        val infoText = """
-            PRECIO GAS ALERT
-            =================
-            
-            ERROR AL CARGAR DATOS
-            =====================
-            
-            $error
-            
-            POSIBLES CAUSAS:
-            • Sin conexión a internet
-            • API temporalmente no disponible
-            • Error de red
-            
-            TOCA PARA REINTENTAR
-        """.trimIndent()
-        
-        textViewWelcome.text = infoText
-        
-        // Mostrar toast de error
-        Toast.makeText(this, "Error: $error", Toast.LENGTH_LONG).show()
+
+    private fun actualizarUI() {
+        val filtros = EstacionManager.obtenerFiltros()
+        val resumen = buildString {
+            append("Tipo: ")
+            append(if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "Cualquiera")
+            if (filtros.precioMaximo != null) append(" | Máx: ${filtros.precioMaximo} €")
+            if (filtros.distanciaMaxima != null) append(" | Distancia: ${filtros.distanciaMaxima} km")
+        }
+        textViewFiltros.text = "Filtros: $resumen"
+
+        val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, userLat, userLon)
+        adapter = EstacionAdapter(estaciones, filtros.tipoCombustible)
+        recyclerView.adapter = adapter
+
+        val fecha = EstacionManager.obtenerUltimaActualizacion()
+        textViewFecha.text = "Fecha: ${fecha ?: "-"}"
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CONFIG && resultCode == Activity.RESULT_OK) {
+            actualizarUI()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION) {
+            Log.d("PERMISOS", "onRequestPermissionsResult: ${'$'}{grantResults.joinToString()}")
+            Toast.makeText(this, "onRequestPermissionsResult: ${'$'}{grantResults.joinToString()}", Toast.LENGTH_SHORT).show()
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("PERMISOS", "Permiso concedido por el usuario")
+                Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show()
+                obtenerUbicacionYMostrar()
+            } else {
+                Log.d("PERMISOS", "Permiso denegado por el usuario")
+                Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+                userLat = null
+                userLon = null
+                mostrarDatosGuardadosYRefrescar()
+            }
+        }
     }
 } 

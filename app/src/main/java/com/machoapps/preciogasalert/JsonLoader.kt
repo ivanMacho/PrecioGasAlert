@@ -2,6 +2,7 @@ package com.machoapps.preciogasalert
 
 import android.content.Context
 import android.util.Log
+import org.json.JSONArray
 import org.json.JSONObject
 
 object JsonLoader {
@@ -162,5 +163,65 @@ object JsonLoader {
         } else {
             "Error al cargar datos de ejemplo"
         }
+    }
+
+    fun listaEstacionesToJson(lista: List<EstacionTerrestre>): String {
+        val arr = JSONArray()
+        lista.forEach { est ->
+            val obj = JSONObject()
+            obj.put("IDEESS", est.id)
+            obj.put("Rótulo", est.rotulo)
+            obj.put("Dirección", est.direccion)
+            obj.put("Localidad", est.localidad)
+            obj.put("Provincia", est.provincia)
+            obj.put("Municipio", est.municipio)
+            obj.put("C.P.", est.codigoPostal)
+            obj.put("Horario", est.horario)
+            obj.put("Latitud", est.latitud)
+            obj.put("Longitud (WGS84)", est.longitud)
+            obj.put("Margen", est.margen)
+            obj.put("Tipo Venta", est.tipoVenta)
+            obj.put("Remisión", est.remision)
+            obj.put("IDMunicipio", est.idMunicipio)
+            obj.put("IDProvincia", est.idProvincia)
+            obj.put("IDCCAA", est.idCCAA)
+            obj.put("Precio Gasolina 95 E5", est.precioGasolina95E5)
+            obj.put("Precio Gasolina 95 E5 Premium", est.precioGasolina95E5Premium)
+            obj.put("Precio Gasolina 95 E10", est.precioGasolina95E10)
+            obj.put("Precio Gasolina 95 E25", est.precioGasolina95E25)
+            obj.put("Precio Gasolina 95 E85", est.precioGasolina95E85)
+            obj.put("Precio Gasolina 98 E5", est.precioGasolina98E5)
+            obj.put("Precio Gasolina 98 E10", est.precioGasolina98E10)
+            obj.put("Precio Gasolina Renovable", est.precioGasolinaRenovable)
+            obj.put("Precio Gasoleo A", est.precioGasoleoA)
+            obj.put("Precio Gasoleo B", est.precioGasoleoB)
+            obj.put("Precio Gasoleo Premium", est.precioGasoleoPremium)
+            obj.put("Precio Diésel Renovable", est.precioDieselRenovable)
+            obj.put("Precio Biodiesel", est.precioBiodiesel)
+            obj.put("Precio Bioetanol", est.precioBioetanol)
+            obj.put("Precio Adblue", est.precioAdblue)
+            obj.put("Precio Gas Natural Comprimido", est.precioGasNaturalComprimido)
+            obj.put("Precio Gas Natural Licuado", est.precioGasNaturalLicuado)
+            obj.put("Precio Biogas Natural Comprimido", est.precioBiogasNaturalComprimido)
+            obj.put("Precio Biogas Natural Licuado", est.precioBiogasNaturalLicuado)
+            obj.put("Precio Gases licuados del petróleo", est.precioGasesLicuadosPetroleo)
+            obj.put("Precio Hidrogeno", est.precioHidrogeno)
+            obj.put("Precio Amoniaco", est.precioAmoniaco)
+            obj.put("Precio Metanol", est.precioMetanol)
+            obj.put("% BioEtanol", est.porcentajeBioEtanol)
+            obj.put("% Éster metílico", est.porcentajeEsterMetilico)
+            arr.put(obj)
+        }
+        return arr.toString()
+    }
+
+    fun parsearListaEstaciones(json: String): List<EstacionTerrestre> {
+        val arr = JSONArray(json)
+        val lista = mutableListOf<EstacionTerrestre>()
+        for (i in 0 until arr.length()) {
+            val item = arr.getJSONObject(i)
+            lista.add(SettingsActivity.parsearEstacionFromJson(item))
+        }
+        return lista
     }
 } 
