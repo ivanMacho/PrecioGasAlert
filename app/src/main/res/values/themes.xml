@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.PrecioGasAlert" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Fondo principal negro -->
+        <item name="android:windowBackground">@color/retro_black</item>
+        <item name="android:colorBackground">@color/retro_black</item>
+        
+        <!-- Barra de estado negra -->
+        <item name="android:statusBarColor">@color/status_bar_black</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Colores principales -->
+        <item name="colorPrimary">@color/retro_green</item>
+        <item name="colorOnPrimary">@color/retro_black</item>
+        <item name="colorSecondary">@color/retro_cyan</item>
+        <item name="colorOnSecondary">@color/retro_black</item>
+        <item name="colorSurface">@color/retro_black</item>
+        <item name="colorOnSurface">@color/retro_green</item>
+        
+        <!-- Tipografía retro de los años 80 -->
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/retro_green</item>
+        <item name="android:textColorPrimary">@color/retro_green</item>
+        <item name="android:textColorSecondary">@color/retro_cyan</item>
+        
+        <!-- Configuración de ventana -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:navigationBarColor">@color/status_bar_black</item>
+    </style>
+</resources>
