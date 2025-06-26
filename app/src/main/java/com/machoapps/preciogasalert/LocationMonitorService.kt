@@ -33,8 +33,11 @@ class LocationMonitorService : Service() {
     }
 
     private fun setupLocationUpdates() {
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10_000L)
-            .setMinUpdateDistanceMeters(500f)
+        val prefs = getSharedPreferences("estaciones_prefs", Context.MODE_PRIVATE)
+        val frecuencia = prefs.getInt("monitor_frecuencia", 10) * 1000L // en ms
+        val distancia = prefs.getInt("monitor_distancia", 500).toFloat() // en metros
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, frecuencia)
+            .setMinUpdateDistanceMeters(distancia)
             .build()
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {

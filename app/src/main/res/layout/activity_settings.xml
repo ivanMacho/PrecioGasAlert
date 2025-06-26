@@ -54,4 +54,68 @@
         android:layout_marginTop="32dp"
         style="@style/Widget.Material3.Button"/>
 
+    <TextView
+        android:id="@+id/text_frecuencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Frecuencia de comprobación: 10 s"
+        android:textColor="@color/retro_green"
+        android:fontFamily="monospace"
+        android:layout_marginTop="24dp"/>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_frecuencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="10"
+        android:valueTo="300"
+        android:stepSize="1"
+        android:value="10"
+        app:trackColorActive="@color/retro_green"
+        app:thumbColor="@color/retro_green"
+        app:haloColor="@color/retro_green"
+        app:trackColorInactive="@color/retro_cyan"/>
+
+    <ImageButton
+        android:id="@+id/btn_info_frecuencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_dialog_info"
+        android:background="@android:color/transparent"
+        android:contentDescription="Info frecuencia"
+        android:layout_gravity="end"
+        android:tint="@color/retro_yellow"/>
+
+    <TextView
+        android:id="@+id/text_distancia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Distancia mínima: 500 m"
+        android:textColor="@color/retro_green"
+        android:fontFamily="monospace"
+        android:layout_marginTop="16dp"/>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider_distancia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="100"
+        android:valueTo="2000"
+        android:stepSize="10"
+        android:value="500"
+        app:trackColorActive="@color/retro_green"
+        app:thumbColor="@color/retro_green"
+        app:haloColor="@color/retro_green"
+        app:trackColorInactive="@color/retro_cyan"/>
+
+    <ImageButton
+        android:id="@+id/btn_info_distancia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_dialog_info"
+        android:background="@android:color/transparent"
+        android:contentDescription="Info distancia"
+        android:layout_gravity="end"
+        android:tint="@color/retro_yellow"/>
+
 </LinearLayout> 
