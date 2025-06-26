@@ -220,13 +220,13 @@ class MainActivity : AppCompatActivity() {
         val chipDistancia = findViewById<com.google.android.material.chip.Chip>(R.id.chipDistancia)
         val chipTipoVenta = findViewById<com.google.android.material.chip.Chip>(R.id.chipTipoVenta)
 
-        chipTipo.text = "Tipo: " + (if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "-")
-        chipPrecio.text = if (filtros.precioMaximo != null) "Precio máx: %.2f €".format(filtros.precioMaximo) else "Precio máx: -"
-        chipDistancia.text = if (filtros.distanciaMaxima != null) "Dist. máx: %.1f km".format(filtros.distanciaMaxima) else "Dist. máx: -"
+        chipTipo.text = if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "-"
+        chipPrecio.text = if (filtros.precioMaximo != null) "≤ %.2f €".format(filtros.precioMaximo) else "-"
+        chipDistancia.text = if (filtros.distanciaMaxima != null) "≤ %.1f km".format(filtros.distanciaMaxima) else "-"
         chipTipoVenta.text = when (filtros.tipoVenta) {
-            "P" -> "Venta: Pública"
-            "R" -> "Venta: Reservada"
-            else -> "Venta: -"
+            "P" -> "Pública"
+            "R" -> "Reservada"
+            else -> "-"
         }
 
         val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, userLat, userLon)

@@ -39,7 +39,9 @@
             app:flow_horizontalGap="8dp"
             app:flow_verticalGap="4dp"
             app:flow_horizontalAlign="end"
-            app:flow_maxElementsWrap="3"
+            app:flow_maxElementsWrap="8"
+            app:flow_horizontalStyle="packed"
+            app:flow_verticalStyle="packed"
             app:constraint_referenced_ids="chipTipo,chipPrecio,chipDistancia,chipTipoVenta"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp" />
@@ -101,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:layout_marginTop="0dp"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="16dp"
@@ -112,10 +114,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Precios del: --/--/----"
-                android:textColor="@color/retro_cyan"
+                android:textColor="@color/retro_yellow"
                 android:textSize="14sp"
                 android:fontFamily="monospace"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center"
                 android:layout_marginEnd="8dp"/>
         </LinearLayout>
 
@@ -142,7 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:src="@drawable/ic_filter_list"
+                android:src="@drawable/filter_alt"
                 android:contentDescription="Ajustes"
                 app:tint="@color/retro_green"
                 app:backgroundTint="@color/retro_black"
