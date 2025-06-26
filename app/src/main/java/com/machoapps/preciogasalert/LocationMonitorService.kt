@@ -51,28 +51,75 @@ class LocationMonitorService : Service() {
 
     private fun checkStations(location: Location) {
         val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, location.latitude, location.longitude)
-        val nuevas = estaciones.filter { it.id != null && !lastNotifiedStations.contains(it.id) }
-        if (nuevas.isNotEmpty()) {
-            for (estacion in nuevas) {
-                lanzarNotificacionEstacion(estacion)
-            }
-            lastNotifiedStations = lastNotifiedStations + nuevas.mapNotNull { it.id }
+        if (estaciones.isNotEmpty()) {
+            lanzarNotificacionResumen(estaciones, location)
+            lastNotifiedStations = estaciones.mapNotNull { it.id }.toSet()
         }
     }
 
-    private fun lanzarNotificacionEstacion(estacion: EstacionTerrestre) {
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val notif = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_gas_station)
-            .setContentTitle("¡Estación cercana disponible!")
-            .setContentText("${estacion.rotulo} cumple tus filtros.")
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .build()
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(estacion.id.hashCode(), notif)
+    private fun lanzarNotificacionResumen(estaciones: List<EstacionTerrestre>, userLocation: Location) {
+        val filtros = EstacionManager.obtenerFiltros()
+        val masCercana = estaciones.minByOrNull { estacion ->
+            val lat = estacion.latitud?.replace(",", ".")?.toDoubleOrNull()
+            val lon = estacion.longitud?.replace(",", ".")?.toDoubleOrNull()
+            if (lat != null && lon != null) {
+                val results = FloatArray(1)
+                Location.distanceBetween(userLocation.latitude, userLocation.longitude, lat, lon, results)
+                results[0]
+            } else {
+                Float.MAX_VALUE
+            }
+        }
+        if (masCercana != null) {
+            val lat = masCercana.latitud?.replace(",", ".")?.toDoubleOrNull()
+            val lon = masCercana.longitud?.replace(",", ".")?.toDoubleOrNull()
+            val results = FloatArray(1)
+            if (lat != null && lon != null) {
+                Location.distanceBetween(userLocation.latitude, userLocation.longitude, lat, lon, results)
+            }
+            val distancia = if (results[0] > 1000) "%.1f km".format(results[0]/1000) else "%.0f m".format(results[0])
+            val precio = when (filtros.tipoCombustible) {
+                "Adblue" -> masCercana.precioAdblue
+                "Amoniaco" -> masCercana.precioAmoniaco
+                "Biodiesel" -> masCercana.precioBiodiesel
+                "Bioetanol" -> masCercana.precioBioetanol
+                "Biogas Natural Comprimido" -> masCercana.precioBiogasNaturalComprimido
+                "Biogas Natural Licuado" -> masCercana.precioBiogasNaturalLicuado
+                "Diésel Renovable" -> masCercana.precioDieselRenovable
+                "Gas Natural Comprimido" -> masCercana.precioGasNaturalComprimido
+                "Gas Natural Licuado" -> masCercana.precioGasNaturalLicuado
+                "Gases licuados del petróleo" -> masCercana.precioGasesLicuadosPetroleo
+                "Gasoleo A" -> masCercana.precioGasoleoA
+                "Gasoleo B" -> masCercana.precioGasoleoB
+                "Gasoleo Premium" -> masCercana.precioGasoleoPremium
+                "Gasolina 95 E10" -> masCercana.precioGasolina95E10
+                "Gasolina 95 E25" -> masCercana.precioGasolina95E25
+                "Gasolina 95 E5" -> masCercana.precioGasolina95E5
+                "Gasolina 95 E5 Premium" -> masCercana.precioGasolina95E5Premium
+                "Gasolina 95 E85" -> masCercana.precioGasolina95E85
+                "Gasolina 98 E10" -> masCercana.precioGasolina98E10
+                "Gasolina 98 E5" -> masCercana.precioGasolina98E5
+                "Gasolina Renovable" -> masCercana.precioGasolinaRenovable
+                "Hidrogeno" -> masCercana.precioHidrogeno
+                "Metanol" -> masCercana.precioMetanol
+                else -> null
+            }
+            val textoPrecio = if (!precio.isNullOrEmpty()) "$precio €/L" else "-"
+            val texto = "${masCercana.rotulo ?: "Estación"} - $textoPrecio a $distancia" +
+                if (estaciones.size > 1) ". Y ${estaciones.size - 1} más cumplen tus filtros." else ""
+            val intent = Intent(this, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val notif = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_gas_station)
+                .setContentTitle("¡Hay estaciones que cumplen tus filtros!")
+                .setContentText(texto)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .build()
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.notify(NOTIF_ID, notif)
+        }
     }
 
     private fun buildNotification(text: String): Notification {

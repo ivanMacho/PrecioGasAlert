@@ -167,20 +167,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun mostrarDatosGuardadosYRefrescar() {
         actualizarUI()
-        iniciarAnimacionRefresco()
-        coroutineScope.launch {
-            EstacionManager.cargarDatosReales(
-                context = this@MainActivity,
-                onSuccess = {
-                    actualizarUI()
-                    detenerAnimacionRefresco()
-                    Toast.makeText(this@MainActivity, "Datos actualizados", Toast.LENGTH_SHORT).show()
-                },
-                onError = {
-                    detenerAnimacionRefresco()
-                    Toast.makeText(this@MainActivity, "No se pudo actualizar: $it", Toast.LENGTH_SHORT).show()
-                }
-            )
+        val prefs = getSharedPreferences("estaciones_prefs", MODE_PRIVATE)
+        val fechaUltima = prefs.getString("fecha", null)
+        val ahora = System.currentTimeMillis()
+        var haceMasDe2h = true
+        if (fechaUltima != null) {
+            // Intentar parsear la fecha como timestamp, si no, como string tipo "2024-06-26 12:00:00"
+            val timestamp = fechaUltima.toLongOrNull()
+            if (timestamp != null) {
+                haceMasDe2h = (ahora - timestamp) > 2 * 60 * 60 * 1000
+            } else {
+                // Si la fecha es un string, no podemos comparar bien, así que forzamos refresco cada vez
+                haceMasDe2h = true
+            }
+        }
+        if (!EstacionManager.tieneDatos() || haceMasDe2h) {
+            iniciarAnimacionRefresco()
+            coroutineScope.launch {
+                EstacionManager.cargarDatosReales(
+                    context = this@MainActivity,
+                    onSuccess = {
+                        actualizarUI()
+                        detenerAnimacionRefresco()
+                        Toast.makeText(this@MainActivity, "Datos actualizados", Toast.LENGTH_SHORT).show()
+                        // Guardar timestamp actual como fecha
+                        prefs.edit().putString("fecha", ahora.toString()).apply()
+                    },
+                    onError = {
+                        detenerAnimacionRefresco()
+                        Toast.makeText(this@MainActivity, "No se pudo actualizar: $it", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        } else {
+            detenerAnimacionRefresco()
         }
     }
 
