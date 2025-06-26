@@ -29,6 +29,9 @@ class SettingsActivity : AppCompatActivity() {
         val sliderDistancia = findViewById<com.google.android.material.slider.Slider>(R.id.slider_distancia)
         val textDistancia = findViewById<TextView>(R.id.text_distancia)
         val btnInfoDistancia = findViewById<ImageButton>(R.id.btn_info_distancia)
+        val radioGroupTipoVenta = findViewById<RadioGroup>(R.id.radio_group_tipo_venta)
+        val radioVentaPublica = findViewById<RadioButton>(R.id.radio_venta_publica)
+        val radioVentaReservada = findViewById<RadioButton>(R.id.radio_venta_reservada)
 
         // Cargar valor actual
         val filtros = EstacionManager.obtenerFiltros()
@@ -36,6 +39,11 @@ class SettingsActivity : AppCompatActivity() {
             radioPrecio.isChecked = true
         } else {
             radioDistancia.isChecked = true
+        }
+        // Selección tipo de venta
+        when (filtros.tipoVenta) {
+            "R" -> radioVentaReservada.isChecked = true
+            else -> radioVentaPublica.isChecked = true
         }
 
         // Cargar valores guardados (usamos SharedPreferences para estos parámetros)
@@ -71,7 +79,12 @@ class SettingsActivity : AppCompatActivity() {
 
         btnAplicar.setOnClickListener {
             val nuevoOrden = if (radioPrecio.isChecked) "precio" else "distancia"
-            val nuevosFiltros = filtros.copy(orden = nuevoOrden)
+            val nuevoTipoVenta = when {
+                radioVentaPublica.isChecked -> "P"
+                radioVentaReservada.isChecked -> "R"
+                else -> "P"
+            }
+            val nuevosFiltros = filtros.copy(orden = nuevoOrden, tipoVenta = nuevoTipoVenta)
             EstacionManager.guardarFiltros(this, nuevosFiltros)
             // Guardar frecuencia y distancia
             val nuevaFrecuencia = sliderFrecuencia.value.toInt()

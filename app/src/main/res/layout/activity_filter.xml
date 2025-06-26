@@ -35,7 +35,11 @@
         android:text="Precio máximo: 1.80 €"
         android:textColor="@color/retro_green"
         android:fontFamily="monospace"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeStepGranularity="1sp"/>
 
     <com.google.android.material.slider.Slider
         android:id="@+id/slider_precio_maximo"
@@ -58,7 +62,11 @@
         android:text="Distancia máxima: 5 km"
         android:textColor="@color/retro_green"
         android:fontFamily="monospace"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeStepGranularity="1sp"/>
 
     <com.google.android.material.slider.Slider
         android:id="@+id/slider_distancia_maxima"

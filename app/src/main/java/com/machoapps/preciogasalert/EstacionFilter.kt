@@ -9,7 +9,8 @@ data class EstacionFilter(
     val tipoCombustible: String = "",
     val precioMaximo: Double? = null,
     val distanciaMaxima: Double? = null,
-    val orden: String = "distancia" // "distancia" o "precio"
+    val orden: String = "distancia", // "distancia" o "precio"
+    val tipoVenta: String = "P" // "P" (Pública), "R" (Reservada), o "" (cualquiera)
 ) {
     fun toJson(): String {
         val obj = JSONObject()
@@ -17,6 +18,7 @@ data class EstacionFilter(
         obj.put("precioMaximo", precioMaximo)
         obj.put("distanciaMaxima", distanciaMaxima)
         obj.put("orden", orden)
+        obj.put("tipoVenta", tipoVenta)
         return obj.toString()
     }
 
@@ -29,7 +31,8 @@ data class EstacionFilter(
                     tipoCombustible = obj.optString("tipoCombustible", ""),
                     precioMaximo = if (obj.isNull("precioMaximo")) null else obj.optDouble("precioMaximo"),
                     distanciaMaxima = if (obj.isNull("distanciaMaxima")) null else obj.optDouble("distanciaMaxima"),
-                    orden = obj.optString("orden", "distancia")
+                    orden = obj.optString("orden", "distancia"),
+                    tipoVenta = obj.optString("tipoVenta", "P")
                 )
             } catch (e: Exception) {
                 EstacionFilter()

@@ -235,7 +235,9 @@ object EstacionManager {
                     false
                 }
             } else true
-            (filtro.tipoCombustible.isEmpty() || !precio.isNullOrEmpty()) && cumplePrecio && cumpleDistancia
+            // Filtrado por tipo de venta
+            val cumpleTipoVenta = filtro.tipoVenta.isEmpty() || estacion.tipoVenta == filtro.tipoVenta
+            (filtro.tipoCombustible.isEmpty() || !precio.isNullOrEmpty()) && cumplePrecio && cumpleDistancia && cumpleTipoVenta
         }
         // Ordenar según preferencia
         return when (filtro.orden) {

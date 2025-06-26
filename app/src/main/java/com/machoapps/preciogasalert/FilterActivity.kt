@@ -59,7 +59,8 @@ class FilterActivity : AppCompatActivity() {
                 tipoCombustible = inputTipo.text.toString(),
                 precioMaximo = sliderPrecio.value.toDouble(),
                 distanciaMaxima = sliderDistancia.value.toDouble(),
-                orden = filtros.orden
+                orden = filtros.orden,
+                tipoVenta = filtros.tipoVenta
             )
             EstacionManager.guardarFiltros(this, nuevoFiltro)
             setResult(Activity.RESULT_OK)

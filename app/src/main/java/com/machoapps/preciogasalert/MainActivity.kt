@@ -218,17 +218,23 @@ class MainActivity : AppCompatActivity() {
         val chipTipo = findViewById<com.google.android.material.chip.Chip>(R.id.chipTipo)
         val chipPrecio = findViewById<com.google.android.material.chip.Chip>(R.id.chipPrecio)
         val chipDistancia = findViewById<com.google.android.material.chip.Chip>(R.id.chipDistancia)
+        val chipTipoVenta = findViewById<com.google.android.material.chip.Chip>(R.id.chipTipoVenta)
 
-        chipTipo.text = "Tipo: " + (if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "Cualquiera")
-        chipPrecio.text = if (filtros.precioMaximo != null) "Máx: %.2f €".format(filtros.precioMaximo) else "Máx: -"
-        chipDistancia.text = if (filtros.distanciaMaxima != null) "Distancia: %.1f km".format(filtros.distanciaMaxima) else "Distancia: -"
+        chipTipo.text = "Tipo: " + (if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "-")
+        chipPrecio.text = if (filtros.precioMaximo != null) "Precio máx: %.2f €".format(filtros.precioMaximo) else "Precio máx: -"
+        chipDistancia.text = if (filtros.distanciaMaxima != null) "Dist. máx: %.1f km".format(filtros.distanciaMaxima) else "Dist. máx: -"
+        chipTipoVenta.text = when (filtros.tipoVenta) {
+            "P" -> "Venta: Pública"
+            "R" -> "Venta: Reservada"
+            else -> "Venta: -"
+        }
 
         val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, userLat, userLon)
         adapter = EstacionAdapter(estaciones, filtros.tipoCombustible, userLat, userLon)
         recyclerView.adapter = adapter
 
         val fecha = EstacionManager.obtenerUltimaActualizacion()
-        textViewFecha.text = "Fecha: " + (fecha?.let {
+        textViewFecha.text = "Precios del: " + (fecha?.let {
             val timestamp = it.toLongOrNull()
             if (timestamp != null) {
                 // Formatear timestamp a fecha legible

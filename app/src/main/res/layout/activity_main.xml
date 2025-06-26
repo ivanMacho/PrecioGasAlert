@@ -31,58 +31,70 @@
             android:background="@color/retro_black"/>
 
         <!-- Línea de filtros minimalista -->
-        <LinearLayout
-            android:id="@+id/layoutFiltros"
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flowFiltros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end|center_vertical"
+            app:flow_wrapMode="chain"
+            app:flow_horizontalGap="8dp"
+            app:flow_verticalGap="4dp"
+            app:flow_horizontalAlign="end"
+            app:flow_maxElementsWrap="3"
+            app:constraint_referenced_ids="chipTipo,chipPrecio,chipDistancia,chipTipoVenta"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="8dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTipo"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:text="Tipo: Gasoleo A"
-                app:chipBackgroundColor="@color/retro_cyan"
-                app:chipStrokeColor="@color/retro_green"
-                app:chipStrokeWidth="0.5dp"
-                android:textColor="@color/retro_black"
-                android:textSize="12sp"
-                android:fontFamily="monospace"
-                android:layout_marginEnd="4dp"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipTipo"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Tipo: Gasoleo A"
+            app:chipBackgroundColor="@color/retro_cyan"
+            app:chipStrokeColor="@color/retro_green"
+            app:chipStrokeWidth="0.5dp"
+            android:textColor="@color/retro_black"
+            android:textSize="12sp"
+            android:fontFamily="monospace" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPrecio"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:text="Máx: 1.80 €"
-                app:chipBackgroundColor="@color/retro_cyan"
-                app:chipStrokeColor="@color/retro_green"
-                app:chipStrokeWidth="0.5dp"
-                android:textColor="@color/retro_black"
-                android:textSize="12sp"
-                android:fontFamily="monospace"
-                android:layout_marginEnd="4dp"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipPrecio"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Máx: 1.80 €"
+            app:chipBackgroundColor="@color/retro_cyan"
+            app:chipStrokeColor="@color/retro_green"
+            app:chipStrokeWidth="0.5dp"
+            android:textColor="@color/retro_black"
+            android:textSize="12sp"
+            android:fontFamily="monospace" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipDistancia"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:text="Distancia: 5.0 km"
-                app:chipBackgroundColor="@color/retro_cyan"
-                app:chipStrokeColor="@color/retro_green"
-                app:chipStrokeWidth="0.5dp"
-                android:textColor="@color/retro_black"
-                android:textSize="12sp"
-                android:fontFamily="monospace"
-                android:layout_marginEnd="8dp"/>
-        </LinearLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipDistancia"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Distancia: 5.0 km"
+            app:chipBackgroundColor="@color/retro_cyan"
+            app:chipStrokeColor="@color/retro_green"
+            app:chipStrokeWidth="0.5dp"
+            android:textColor="@color/retro_black"
+            android:textSize="12sp"
+            android:fontFamily="monospace" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipTipoVenta"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Venta: Pública"
+            app:chipBackgroundColor="@color/retro_cyan"
+            app:chipStrokeColor="@color/retro_green"
+            app:chipStrokeWidth="0.5dp"
+            android:textColor="@color/retro_black"
+            android:textSize="12sp"
+            android:fontFamily="monospace" />
 
         <!-- Línea de fecha -->
         <LinearLayout
@@ -99,7 +111,7 @@
                 android:id="@+id/textViewFecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Datos del: --/--/----"
+                android:text="Precios del: --/--/----"
                 android:textColor="@color/retro_cyan"
                 android:textSize="14sp"
                 android:fontFamily="monospace"
@@ -130,7 +142,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/ic_filter_list"
                 android:contentDescription="Ajustes"
                 app:tint="@color/retro_green"
                 app:backgroundTint="@color/retro_black"

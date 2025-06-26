@@ -43,6 +43,43 @@
             android:layout_marginStart="32dp"/>
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/text_tipo_venta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tipo de venta:"
+        android:textColor="@color/retro_green"
+        android:fontFamily="monospace"
+        android:layout_marginTop="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group_tipo_venta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/radio_venta_publica"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pública"
+            android:textColor="@color/retro_yellow"
+            android:fontFamily="monospace"
+            android:buttonTint="@color/retro_yellow"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radio_venta_reservada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reservada"
+            android:textColor="@color/retro_yellow"
+            android:fontFamily="monospace"
+            android:buttonTint="@color/retro_yellow"
+            android:layout_marginStart="32dp"/>
+    </RadioGroup>
+
     <Button
         android:id="@+id/btn_aplicar_filtros"
         android:layout_width="match_parent"
