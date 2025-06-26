@@ -152,7 +152,3 @@
 
 - Datos oficiales: [Ministerio para la Transición Ecológica y el Reto Demográfico, Gobierno de España](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/)
 - Iconos: Material Icons
-
----
-
-¿Quieres que añada una sección de troubleshooting, contribución o alguna otra sección específica? 
