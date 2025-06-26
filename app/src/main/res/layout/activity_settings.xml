@@ -7,77 +7,47 @@
     android:padding="24dp"
     android:background="@color/retro_black">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <TextView
+        android:id="@+id/text_orden"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tipo de combustible"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu"
-        app:boxBackgroundMode="filled"
-        app:boxBackgroundColor="@color/retro_black"
-        app:hintTextColor="@color/retro_green">
+        android:text="Ordenar por:"
+        android:textColor="@color/retro_green"
+        android:fontFamily="monospace"
+        android:layout_marginTop="16dp"/>
 
-        <AutoCompleteTextView
-            android:id="@+id/input_tipo_combustible"
-            android:layout_width="match_parent"
+    <RadioGroup
+        android:id="@+id/radio_group_orden"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/radio_orden_distancia"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/retro_green"
-            android:background="@android:color/transparent"
-            android:inputType="none"
-            android:dropDownHeight="300dp"
-            android:fontFamily="monospace"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:text="Distancia"
+            android:textColor="@color/retro_yellow"
+            android:fontFamily="monospace"
+            android:buttonTint="@color/retro_yellow"/>
 
-    <!-- Precio máximo Slider -->
-    <TextView
-        android:id="@+id/text_precio_maximo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Precio máximo: 1.80 €"
-        android:textColor="@color/retro_green"
-        android:fontFamily="monospace"
-        android:layout_marginTop="16dp"/>
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/slider_precio_maximo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:valueFrom="0.0"
-        android:valueTo="3.5"
-        android:stepSize="0.01"
-        android:value="1.8"
-        app:trackColorActive="@color/retro_green"
-        app:thumbColor="@color/retro_green"
-        app:haloColor="@color/retro_green"
-        app:trackColorInactive="@color/retro_cyan"/>
-
-    <!-- Distancia máxima Slider -->
-    <TextView
-        android:id="@+id/text_distancia_maxima"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Distancia máxima: 5 km"
-        android:textColor="@color/retro_green"
-        android:fontFamily="monospace"
-        android:layout_marginTop="16dp"/>
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/slider_distancia_maxima"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:valueFrom="0"
-        android:valueTo="100"
-        android:stepSize="0.1"
-        android:value="5"
-        app:trackColorActive="@color/retro_green"
-        app:thumbColor="@color/retro_green"
-        app:haloColor="@color/retro_green"
-        app:trackColorInactive="@color/retro_cyan"/>
+        <RadioButton
+            android:id="@+id/radio_orden_precio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precio"
+            android:textColor="@color/retro_yellow"
+            android:fontFamily="monospace"
+            android:buttonTint="@color/retro_yellow"
+            android:layout_marginStart="32dp"/>
+    </RadioGroup>
 
     <Button
         android:id="@+id/btn_aplicar_filtros"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aplicar filtros"
+        android:text="Aplicar"
         android:textColor="@color/retro_black"
         android:backgroundTint="@color/retro_green"
         android:fontFamily="monospace"

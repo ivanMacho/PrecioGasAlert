@@ -58,7 +58,8 @@ class FilterActivity : AppCompatActivity() {
             val nuevoFiltro = EstacionFilter(
                 tipoCombustible = inputTipo.text.toString(),
                 precioMaximo = sliderPrecio.value.toDouble(),
-                distanciaMaxima = sliderDistancia.value.toDouble()
+                distanciaMaxima = sliderDistancia.value.toDouble(),
+                orden = filtros.orden
             )
             EstacionManager.guardarFiltros(this, nuevoFiltro)
             setResult(Activity.RESULT_OK)

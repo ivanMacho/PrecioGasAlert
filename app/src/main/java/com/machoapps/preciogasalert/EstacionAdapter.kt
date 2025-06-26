@@ -1,5 +1,7 @@
 package com.machoapps.preciogasalert
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 
 class EstacionAdapter(
     private var estaciones: List<EstacionTerrestre>,
-    private val tipoCombustible: String
+    private val tipoCombustible: String,
+    private val userLat: Double?,
+    private val userLon: Double?
 ) : RecyclerView.Adapter<EstacionAdapter.EstacionViewHolder>() {
 
     class EstacionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textNombre: TextView = view.findViewById(R.id.textNombreEstacion)
         val textPrecio: TextView = view.findViewById(R.id.textPrecioEstacion)
+        val textDistancia: TextView = view.findViewById(R.id.textDistanciaEstacion)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EstacionViewHolder {
@@ -52,6 +57,28 @@ class EstacionAdapter(
             else -> null
         }
         holder.textPrecio.text = if (!precio.isNullOrEmpty()) "$precio €" else "-"
+
+        // Calcular y mostrar distancia
+        val estLat = estacion.latitud?.replace(",", ".")?.toDoubleOrNull()
+        val estLon = estacion.longitud?.replace(",", ".")?.toDoubleOrNull()
+        if (userLat != null && userLon != null && estLat != null && estLon != null) {
+            val results = FloatArray(1)
+            android.location.Location.distanceBetween(userLat, userLon, estLat, estLon, results)
+            val distancia = results[0]
+            holder.textDistancia.text = if (distancia > 1000) "%.1f km".format(distancia/1000) else "%.0f m".format(distancia)
+        } else {
+            holder.textDistancia.text = "-"
+        }
+
+        // Click para abrir Google Maps
+        holder.itemView.setOnClickListener {
+            if (estLat != null && estLon != null) {
+                val uri = Uri.parse("geo:$estLat,$estLon?q=$estLat,$estLon(${estacion.rotulo ?: "Estación"})")
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.setPackage("com.google.android.apps.maps")
+                holder.itemView.context.startActivity(intent)
+            }
+        }
     }
 
     override fun getItemCount(): Int = estaciones.size

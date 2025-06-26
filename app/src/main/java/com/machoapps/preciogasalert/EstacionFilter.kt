@@ -8,13 +8,15 @@ import org.json.JSONObject
 data class EstacionFilter(
     val tipoCombustible: String = "",
     val precioMaximo: Double? = null,
-    val distanciaMaxima: Double? = null
+    val distanciaMaxima: Double? = null,
+    val orden: String = "distancia" // "distancia" o "precio"
 ) {
     fun toJson(): String {
         val obj = JSONObject()
         obj.put("tipoCombustible", tipoCombustible)
         obj.put("precioMaximo", precioMaximo)
         obj.put("distanciaMaxima", distanciaMaxima)
+        obj.put("orden", orden)
         return obj.toString()
     }
 
@@ -26,7 +28,8 @@ data class EstacionFilter(
                 EstacionFilter(
                     tipoCombustible = obj.optString("tipoCombustible", ""),
                     precioMaximo = if (obj.isNull("precioMaximo")) null else obj.optDouble("precioMaximo"),
-                    distanciaMaxima = if (obj.isNull("distanciaMaxima")) null else obj.optDouble("distanciaMaxima")
+                    distanciaMaxima = if (obj.isNull("distanciaMaxima")) null else obj.optDouble("distanciaMaxima"),
+                    orden = obj.optString("orden", "distancia")
                 )
             } catch (e: Exception) {
                 EstacionFilter()

@@ -192,8 +192,8 @@ object EstacionManager {
     fun obtenerResultadoConsulta(): String? = resultadoConsulta
     
     fun obtenerEstacionesFiltradas(context: Context, userLat: Double? = null, userLon: Double? = null): List<EstacionTerrestre> {
-        return estaciones.filter { estacion ->
-            val filtro = filtros
+        val filtro = filtros
+        val filtradas = estaciones.filter { estacion ->
             val precio = when (filtro.tipoCombustible) {
                 "Adblue" -> estacion.precioAdblue
                 "Amoniaco" -> estacion.precioAmoniaco
@@ -236,6 +236,53 @@ object EstacionManager {
                 }
             } else true
             (filtro.tipoCombustible.isEmpty() || !precio.isNullOrEmpty()) && cumplePrecio && cumpleDistancia
+        }
+        // Ordenar según preferencia
+        return when (filtro.orden) {
+            "precio" -> filtradas.sortedBy { estacion ->
+                val precio = when (filtro.tipoCombustible) {
+                    "Adblue" -> estacion.precioAdblue
+                    "Amoniaco" -> estacion.precioAmoniaco
+                    "Biodiesel" -> estacion.precioBiodiesel
+                    "Bioetanol" -> estacion.precioBioetanol
+                    "Biogas Natural Comprimido" -> estacion.precioBiogasNaturalComprimido
+                    "Biogas Natural Licuado" -> estacion.precioBiogasNaturalLicuado
+                    "Diésel Renovable" -> estacion.precioDieselRenovable
+                    "Gas Natural Comprimido" -> estacion.precioGasNaturalComprimido
+                    "Gas Natural Licuado" -> estacion.precioGasNaturalLicuado
+                    "Gases licuados del petróleo" -> estacion.precioGasesLicuadosPetroleo
+                    "Gasoleo A" -> estacion.precioGasoleoA
+                    "Gasoleo B" -> estacion.precioGasoleoB
+                    "Gasoleo Premium" -> estacion.precioGasoleoPremium
+                    "Gasolina 95 E10" -> estacion.precioGasolina95E10
+                    "Gasolina 95 E25" -> estacion.precioGasolina95E25
+                    "Gasolina 95 E5" -> estacion.precioGasolina95E5
+                    "Gasolina 95 E5 Premium" -> estacion.precioGasolina95E5Premium
+                    "Gasolina 95 E85" -> estacion.precioGasolina95E85
+                    "Gasolina 98 E10" -> estacion.precioGasolina98E10
+                    "Gasolina 98 E5" -> estacion.precioGasolina98E5
+                    "Gasolina Renovable" -> estacion.precioGasolinaRenovable
+                    "Hidrogeno" -> estacion.precioHidrogeno
+                    "Metanol" -> estacion.precioMetanol
+                    else -> null
+                }
+                precio?.replace(",", ".")?.toDoubleOrNull() ?: Double.MAX_VALUE
+            }
+            else -> filtradas.sortedBy { estacion ->
+                if (userLat != null && userLon != null) {
+                    val estLat = estacion.latitud?.replace(",", ".")?.toDoubleOrNull()
+                    val estLon = estacion.longitud?.replace(",", ".")?.toDoubleOrNull()
+                    if (estLat != null && estLon != null) {
+                        val results = FloatArray(1)
+                        android.location.Location.distanceBetween(userLat, userLon, estLat, estLon, results)
+                        results[0]
+                    } else {
+                        Float.MAX_VALUE
+                    }
+                } else {
+                    Float.MAX_VALUE
+                }
+            }
         }
     }
 

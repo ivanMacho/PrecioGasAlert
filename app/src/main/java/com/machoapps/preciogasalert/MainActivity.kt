@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private val REQUEST_CONFIG = 1001
     private val REQUEST_LOCATION = 2001
+    private val REQUEST_SETTINGS = 1002
     private var userLat: Double? = null
     private var userLon: Double? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         textViewFecha = findViewById(R.id.textViewFecha)
         recyclerView = findViewById(R.id.recyclerViewEstaciones)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = EstacionAdapter(emptyList(), "")
+        adapter = EstacionAdapter(emptyList(), "", userLat, userLon)
         recyclerView.adapter = adapter
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -223,7 +224,7 @@ class MainActivity : AppCompatActivity() {
         chipDistancia.text = if (filtros.distanciaMaxima != null) "Distancia: %.1f km".format(filtros.distanciaMaxima) else "Distancia: -"
 
         val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, userLat, userLon)
-        adapter = EstacionAdapter(estaciones, filtros.tipoCombustible)
+        adapter = EstacionAdapter(estaciones, filtros.tipoCombustible, userLat, userLon)
         recyclerView.adapter = adapter
 
         val fecha = EstacionManager.obtenerUltimaActualizacion()
@@ -241,7 +242,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CONFIG && resultCode == Activity.RESULT_OK) {
+        if ((requestCode == REQUEST_CONFIG || requestCode == REQUEST_SETTINGS) && resultCode == Activity.RESULT_OK) {
             actualizarUI()
         }
     }
@@ -274,10 +275,15 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
+                startActivityForResult(intent, REQUEST_SETTINGS)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    companion object {
+        private const val REQUEST_CONFIG = 1001
+        private const val REQUEST_SETTINGS = 1002
     }
 } 
