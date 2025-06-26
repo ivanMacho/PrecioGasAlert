@@ -25,6 +25,10 @@ import android.util.Log
 import com.google.android.material.button.MaterialButton
 import android.animation.ObjectAnimator
 import android.widget.ImageButton
+import android.view.Menu
+import android.view.MenuItem
+import com.machoapps.preciogasalert.FilterActivity
+import com.machoapps.preciogasalert.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textViewFecha: TextView
@@ -45,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
+        setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.app_name)
 
         textViewFecha = findViewById(R.id.textViewFecha)
@@ -55,9 +60,9 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val fabSettings = findViewById<FloatingActionButton>(R.id.fabSettings)
-        fabSettings.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
+        val fabFilter = findViewById<FloatingActionButton>(R.id.fabFilter)
+        fabFilter.setOnClickListener {
+            val intent = Intent(this, FilterActivity::class.java)
             startActivityForResult(intent, REQUEST_CONFIG)
         }
 
@@ -245,6 +250,22 @@ class MainActivity : AppCompatActivity() {
                 userLon = null
                 mostrarDatosGuardadosYRefrescar()
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 } 

@@ -29,6 +29,8 @@
             android:exported="true" />
         <activity android:name=".SettingsActivity"
             android:exported="true" />
+        <activity android:name=".FilterActivity"
+            android:exported="true" />
 
         <service
             android:name=".LocationMonitorService"

@@ -220,7 +220,7 @@ object JsonLoader {
         val lista = mutableListOf<EstacionTerrestre>()
         for (i in 0 until arr.length()) {
             val item = arr.getJSONObject(i)
-            lista.add(SettingsActivity.parsearEstacionFromJson(item))
+            lista.add(FilterActivity.parsearEstacionFromJson(item))
         }
         return lista
     }

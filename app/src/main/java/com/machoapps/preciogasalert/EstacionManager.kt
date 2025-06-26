@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 
 /**
  * Gestor de estaciones de servicio
@@ -29,7 +30,7 @@ object EstacionManager {
         val resultado = prefs.getString(KEY_RESULTADO, null)
         val filtrosJson = prefs.getString(KEY_FILTROS, null)
         if (estacionesJson != null) {
-            estaciones = JsonLoader.parsearListaEstaciones(estacionesJson)
+            estaciones = parsearListaEstaciones(estacionesJson)
         }
         ultimaActualizacion = fecha
         resultadoConsulta = resultado
@@ -54,7 +55,9 @@ object EstacionManager {
         this.filtros = filtros
     }
     
-    fun obtenerFiltros(): EstacionFilter = filtros
+    fun obtenerFiltros(): EstacionFilter {
+        return filtros ?: EstacionFilter()
+    }
     
     /**
      * Carga datos del API real usando corrutinas
@@ -221,5 +224,15 @@ object EstacionManager {
             } else true
             (filtro.tipoCombustible.isEmpty() || !precio.isNullOrEmpty()) && cumplePrecio && cumpleDistancia
         }
+    }
+
+    fun parsearListaEstaciones(json: String): List<EstacionTerrestre> {
+        val arr = JSONArray(json)
+        val lista = mutableListOf<EstacionTerrestre>()
+        for (i in 0 until arr.length()) {
+            val item = arr.getJSONObject(i)
+            lista.add(FilterActivity.parsearEstacionFromJson(item))
+        }
+        return lista
     }
 } 
