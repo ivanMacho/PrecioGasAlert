@@ -23,16 +23,6 @@
         android:padding="16dp"
         android:layout_marginTop="56dp">
 
-        <TextView
-            android:id="@+id/textViewFiltros"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Filtros: -"
-            android:textColor="@color/retro_cyan"
-            android:textSize="16sp"
-            android:fontFamily="monospace"
-            android:layout_marginBottom="8dp"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewEstaciones"
             android:layout_width="match_parent"
@@ -40,28 +30,112 @@
             android:layout_weight="1"
             android:background="@color/retro_black"/>
 
-        <TextView
-            android:id="@+id/textViewFecha"
+        <!-- Línea de filtros minimalista -->
+        <LinearLayout
+            android:id="@+id/layoutFiltros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fecha: -"
-            android:textColor="@color/retro_yellow"
-            android:textSize="14sp"
-            android:fontFamily="monospace"
-            android:gravity="end"
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="64dp"/>
-    </LinearLayout>
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="8dp">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        app:srcCompat="@drawable/ic_settings"
-        app:tint="@color/retro_green"
-        app:backgroundTint="@color/retro_black"
-        android:contentDescription="@string/settings" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTipo"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Tipo: Gasoleo A"
+                app:chipBackgroundColor="@color/retro_cyan"
+                app:chipStrokeColor="@color/retro_green"
+                app:chipStrokeWidth="0.5dp"
+                android:textColor="@color/retro_black"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="4dp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPrecio"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Máx: 1.80 €"
+                app:chipBackgroundColor="@color/retro_cyan"
+                app:chipStrokeColor="@color/retro_green"
+                app:chipStrokeWidth="0.5dp"
+                android:textColor="@color/retro_black"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="4dp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDistancia"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Distancia: 5.0 km"
+                app:chipBackgroundColor="@color/retro_cyan"
+                app:chipStrokeColor="@color/retro_green"
+                app:chipStrokeWidth="0.5dp"
+                android:textColor="@color/retro_black"
+                android:textSize="12sp"
+                android:fontFamily="monospace"
+                android:layout_marginEnd="8dp"/>
+        </LinearLayout>
+
+        <!-- Línea de fecha -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:id="@+id/textViewFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Datos del: --/--/----"
+                android:textColor="@color/retro_cyan"
+                android:textSize="14sp"
+                android:fontFamily="monospace"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"/>
+        </LinearLayout>
+
+        <!-- FABs alineados abajo, uno a la izquierda (actualizar) y otro a la derecha (ajustes) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabRefrescar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:src="@drawable/ic_autorenew"
+                android:contentDescription="Actualizar"
+                app:tint="@color/retro_cyan"
+                app:backgroundTint="@color/retro_black"
+                android:layout_marginStart="24dp"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:src="@drawable/ic_settings"
+                android:contentDescription="Ajustes"
+                app:tint="@color/retro_green"
+                app:backgroundTint="@color/retro_black"
+                android:layout_marginEnd="24dp"/>
+        </FrameLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout> 

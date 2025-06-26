@@ -9,6 +9,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 
 class SettingsActivity : AppCompatActivity() {
@@ -47,17 +48,42 @@ class SettingsActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, combustibles)
         tipoCombustibleInput.setAdapter(adapter)
 
-        // Cargar filtros actuales
+        // Valores por defecto
+        val defaultTipo = "Gasoleo A"
+        val defaultPrecio = 1.8f
+        val defaultDistancia = 5f
+
+        // Cargar filtros actuales o usar por defecto
         val filtros = EstacionManager.obtenerFiltros()
-        tipoCombustibleInput.setText(filtros.tipoCombustible, false)
-        findViewById<EditText>(R.id.input_precio_maximo).setText(filtros.precioMaximo?.toString() ?: "")
-        findViewById<EditText>(R.id.input_distancia_maxima).setText(filtros.distanciaMaxima?.toString() ?: "")
+        val tipoCombustible = if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else defaultTipo
+        val precioMaximo = filtros.precioMaximo?.toFloat() ?: defaultPrecio
+        val distanciaMaxima = filtros.distanciaMaxima?.toFloat() ?: defaultDistancia
+
+        tipoCombustibleInput.setText(tipoCombustible, false)
+
+        // Slider de precio
+        val sliderPrecio = findViewById<Slider>(R.id.slider_precio_maximo)
+        val textPrecio = findViewById<android.widget.TextView>(R.id.text_precio_maximo)
+        sliderPrecio.value = precioMaximo
+        textPrecio.text = "Precio máximo: %.2f €".format(precioMaximo)
+        sliderPrecio.addOnChangeListener { _, value, _ ->
+            textPrecio.text = "Precio máximo: %.2f €".format(value)
+        }
+
+        // Slider de distancia
+        val sliderDistancia = findViewById<Slider>(R.id.slider_distancia_maxima)
+        val textDistancia = findViewById<android.widget.TextView>(R.id.text_distancia_maxima)
+        sliderDistancia.value = distanciaMaxima
+        textDistancia.text = "Distancia máxima: %.0f km".format(distanciaMaxima)
+        sliderDistancia.addOnChangeListener { _, value, _ ->
+            textDistancia.text = "Distancia máxima: %.0f km".format(value)
+        }
 
         val btnAplicar = findViewById<Button>(R.id.btn_aplicar_filtros)
         btnAplicar.setOnClickListener {
             val tipo = tipoCombustibleInput.text.toString()
-            val precio = findViewById<EditText>(R.id.input_precio_maximo).text.toString().toDoubleOrNull()
-            val distancia = findViewById<EditText>(R.id.input_distancia_maxima).text.toString().toDoubleOrNull()
+            val precio = sliderPrecio.value.toDouble()
+            val distancia = sliderDistancia.value.toDouble()
             val nuevosFiltros = EstacionFilter(tipo, precio, distancia)
             EstacionManager.guardarFiltros(this, nuevosFiltros)
             val resultIntent = Intent()

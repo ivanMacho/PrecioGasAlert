@@ -22,9 +22,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.annotation.SuppressLint
 import android.util.Log
+import com.google.android.material.button.MaterialButton
+import android.animation.ObjectAnimator
+import android.widget.ImageButton
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var textViewFiltros: TextView
     private lateinit var textViewFecha: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EstacionAdapter
@@ -34,6 +36,9 @@ class MainActivity : AppCompatActivity() {
     private var userLat: Double? = null
     private var userLon: Double? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var isRefreshing = false
+    private lateinit var fabRefrescar: FloatingActionButton
+    private var refreshAnimator: ObjectAnimator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         toolbar.title = getString(R.string.app_name)
 
-        textViewFiltros = findViewById(R.id.textViewFiltros)
         textViewFecha = findViewById(R.id.textViewFecha)
         recyclerView = findViewById(R.id.recyclerViewEstaciones)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -55,6 +59,13 @@ class MainActivity : AppCompatActivity() {
         fabSettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivityForResult(intent, REQUEST_CONFIG)
+        }
+
+        fabRefrescar = findViewById(R.id.fabRefrescar)
+        fabRefrescar.setOnClickListener {
+            if (!isRefreshing) {
+                refrescarDatosManual()
+            }
         }
 
         Log.d("PERMISOS", "Llamando a checkLocationPermissionAndLoad() desde onCreate")
@@ -111,18 +122,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun mostrarDatosGuardadosYRefrescar() {
-        // Mostrar datos guardados
-        actualizarUI()
-        // Refrescar en segundo plano
+    private fun refrescarDatosManual() {
+        iniciarAnimacionRefresco()
         coroutineScope.launch {
             EstacionManager.cargarDatosReales(
                 context = this@MainActivity,
                 onSuccess = {
                     actualizarUI()
+                    detenerAnimacionRefresco()
                     Toast.makeText(this@MainActivity, "Datos actualizados", Toast.LENGTH_SHORT).show()
                 },
                 onError = {
+                    detenerAnimacionRefresco()
+                    Toast.makeText(this@MainActivity, "No se pudo actualizar: $it", Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
+
+    private fun iniciarAnimacionRefresco() {
+        isRefreshing = true
+        refreshAnimator = ObjectAnimator.ofFloat(fabRefrescar, "rotation", 0f, 360f).apply {
+            duration = 800
+            repeatCount = ObjectAnimator.INFINITE
+            start()
+        }
+        fabRefrescar.isEnabled = false
+    }
+
+    private fun detenerAnimacionRefresco() {
+        isRefreshing = false
+        refreshAnimator?.cancel()
+        fabRefrescar.rotation = 0f
+        fabRefrescar.isEnabled = true
+    }
+
+    private fun mostrarDatosGuardadosYRefrescar() {
+        actualizarUI()
+        iniciarAnimacionRefresco()
+        coroutineScope.launch {
+            EstacionManager.cargarDatosReales(
+                context = this@MainActivity,
+                onSuccess = {
+                    actualizarUI()
+                    detenerAnimacionRefresco()
+                    Toast.makeText(this@MainActivity, "Datos actualizados", Toast.LENGTH_SHORT).show()
+                },
+                onError = {
+                    detenerAnimacionRefresco()
                     Toast.makeText(this@MainActivity, "No se pudo actualizar: $it", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -131,13 +178,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun actualizarUI() {
         val filtros = EstacionManager.obtenerFiltros()
-        val resumen = buildString {
-            append("Tipo: ")
-            append(if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "Cualquiera")
-            if (filtros.precioMaximo != null) append(" | Máx: ${filtros.precioMaximo} €")
-            if (filtros.distanciaMaxima != null) append(" | Distancia: ${filtros.distanciaMaxima} km")
-        }
-        textViewFiltros.text = "Filtros: $resumen"
+        val chipTipo = findViewById<com.google.android.material.chip.Chip>(R.id.chipTipo)
+        val chipPrecio = findViewById<com.google.android.material.chip.Chip>(R.id.chipPrecio)
+        val chipDistancia = findViewById<com.google.android.material.chip.Chip>(R.id.chipDistancia)
+
+        chipTipo.text = "Tipo: " + (if (filtros.tipoCombustible.isNotEmpty()) filtros.tipoCombustible else "Cualquiera")
+        chipPrecio.text = if (filtros.precioMaximo != null) "Máx: %.2f €".format(filtros.precioMaximo) else "Máx: -"
+        chipDistancia.text = if (filtros.distanciaMaxima != null) "Distancia: %.1f km".format(filtros.distanciaMaxima) else "Distancia: -"
 
         val estaciones = EstacionManager.obtenerEstacionesFiltradas(this, userLat, userLon)
         adapter = EstacionAdapter(estaciones, filtros.tipoCombustible)
