@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Inicializar datos y filtros en memoria al arrancar la app
+        EstacionManager.inicializar(this)
+
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.app_name)
@@ -224,7 +227,16 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         val fecha = EstacionManager.obtenerUltimaActualizacion()
-        textViewFecha.text = "Fecha: ${fecha ?: "-"}"
+        textViewFecha.text = "Fecha: " + (fecha?.let {
+            val timestamp = it.toLongOrNull()
+            if (timestamp != null) {
+                // Formatear timestamp a fecha legible
+                val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+                sdf.format(java.util.Date(timestamp))
+            } else {
+                it
+            }
+        } ?: "-")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

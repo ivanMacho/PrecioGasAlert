@@ -29,12 +29,24 @@ object EstacionManager {
         val fecha = prefs.getString(KEY_FECHA, null)
         val resultado = prefs.getString(KEY_RESULTADO, null)
         val filtrosJson = prefs.getString(KEY_FILTROS, null)
+        // Solo establecer por defecto si no hay nada guardado
+        if (filtrosJson.isNullOrEmpty()) {
+            val filtroPorDefecto = EstacionFilter(
+                tipoCombustible = "Gasoleo A",
+                precioMaximo = 1.80,
+                distanciaMaxima = 10.0
+            )
+            prefs.edit().putString(KEY_FILTROS, filtroPorDefecto.toJson()).apply()
+            filtros = filtroPorDefecto
+        } else {
+            // Siempre actualizar los filtros en memoria desde SharedPreferences
+            filtros = EstacionFilter.fromJson(filtrosJson)
+        }
         if (estacionesJson != null) {
             estaciones = parsearListaEstaciones(estacionesJson)
         }
         ultimaActualizacion = fecha
         resultadoConsulta = resultado
-        filtros = EstacionFilter.fromJson(filtrosJson)
     }
     
     fun guardarDatos(context: Context, apiResponse: ApiResponse) {
@@ -63,19 +75,21 @@ object EstacionManager {
      * Carga datos del API real usando corrutinas
      */
     suspend fun cargarDatosReales(context: Context, onSuccess: (ApiResponse) -> Unit, onError: (String) -> Unit) {
+        Log.i("API_TRACE", "[API] Iniciando llamada a cargarDatosReales...")
         try {
             val apiResponse = withContext(Dispatchers.IO) {
                 ApiService.obtenerEstacionesCompleto()
             }
-            
             if (apiResponse != null) {
                 guardarDatos(context, apiResponse)
+                Log.i("API_TRACE", "[API] Llamada exitosa a cargarDatosReales. Respuesta OK.")
                 onSuccess(apiResponse)
             } else {
+                Log.w("API_TRACE", "[API] Llamada a cargarDatosReales fallida. Respuesta nula.")
                 onError("No se pudieron cargar los datos del API")
             }
         } catch (e: Exception) {
-            Log.e("EstacionManager", "Error al cargar datos reales", e)
+            Log.e("API_TRACE", "[API] Error en llamada a cargarDatosReales: ${e.message}")
             onError("Error de conexión: ${e.message}")
         }
     }
@@ -178,7 +192,6 @@ object EstacionManager {
     fun obtenerResultadoConsulta(): String? = resultadoConsulta
     
     fun obtenerEstacionesFiltradas(context: Context, userLat: Double? = null, userLon: Double? = null): List<EstacionTerrestre> {
-        inicializar(context)
         return estaciones.filter { estacion ->
             val filtro = filtros
             val precio = when (filtro.tipoCombustible) {
